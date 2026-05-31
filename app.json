@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "arca",
-    "slug": "snack-c312b7fc-2524-4f6d-a424-ee75d49eac84",
+    "name": "curious-indigo-peach",
+    "slug": "snack-62b40185-34d1-42e7-8f6a-5d2a749da30d",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "description": "Anti robo de celular alarma\n"
+    }
   }
 }

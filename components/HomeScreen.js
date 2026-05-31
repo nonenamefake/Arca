@@ -1,8 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEY = '@alarm_state';
 
 export default function HomeScreen({ navigation }) {
   const [alarmOn, setAlarmOn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAlarmState();
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      saveAlarmState(alarmOn);
+    }
+  }, [alarmOn]);
+
+  const loadAlarmState = async () => {
+    try {
+      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      if (stored !== null) {
+        setAlarmOn(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error('Error loading alarm state:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveAlarmState = async (value) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving alarm state:', error);
+    }
+  };
+
+  const toggleAlarm = useCallback(() => {
+    setAlarmOn((prev) => !prev);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +63,7 @@ export default function HomeScreen({ navigation }) {
 
         <TouchableOpacity 
           style={[styles.alarmBtn, alarmOn ? styles.alarmOn : styles.alarmOff]}
-          onPress={() => setAlarmOn(!alarmOn)}
+          onPress={toggleAlarm}
         >
           <Text style={styles.alarmBtnText}>
             {alarmOn ? 'Desactivar Alarma' : 'Activar Alarma'}

@@ -1,48 +1,101 @@
-import React, { useState } from 'react';
-import { View, Text, Switch, StyleSheet, SafeAreaView, StatusBar, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { PermissionsAndroid, View, Text, Switch, StyleSheet, StatusBar, FlatList, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const initialDevices = [
-  { id: '1', name: 'Xiaomi Band 7', address: 'AA:BB:CC:DD:EE:FF', enabled: false },
-  { id: '2', name: 'AirPods Pro', address: '11:22:33:44:55:66', enabled: true },
-  { id: '3', name: 'Galaxy Watch', address: '77:88:99:AA:BB:CC', enabled: false },
-];
+const STORAGE_KEY = '@linked_devices';
 
 export default function BluetoothScreen({ navigation }) {
-  const [devices, setDevices] = useState(initialDevices);
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error , seterror] = useState('')
+  const [active, setActive] = useState([]);
 
-  const toggleDevice = (id) => {
-    setDevices(devices.map(d => 
-      d.id === id ? { ...d, enabled: !d.enabled } : d
-    ));
+
+  const getResquest = useCallback (async ()=>{
+    axios('http://192.168.1.45:3434/devices')
+    .then(response => setDevices(response.data))
+    .catch(error => seterror('Error al cargar dispositivos'))
+    .finally(() => setLoading(false));
+  },[]);
+useEffect(()=> {
+  getResquest();
+}, [getResquest]);
+useEffect(() => {
+  const loadTasks = async () => {
+    const data = await AsyncStorage.getItem("deviceactive");
+    if (data) setActive(JSON.parse(data));
+    };
+    loadTasks();
+  }, []);
+  
+  useEffect(() => {
+    const saveTasks = async () => {
+      await AsyncStorage.setItem("deviceactive", JSON.stringify(active));
+    };
+    saveTasks();
+  }, [active]);
+
+  const toggleDevice = async (item) => {
+    for (const device of active) {
+      if (device.id === item.id) {
+        setActive(active.map(d => d.id === item.id ? { ...d, active: !d.active } : d));
+        return;
+      }
+    }
+    setActive([...active, { id: item.id, active: true }]);
   };
-
   const renderItem = ({ item }) => (
     <View style={styles.deviceItem}>
       <View style={styles.deviceInfo}>
-        <Text style={styles.deviceName}>{item.name}</Text>
-        <Text style={styles.deviceAddress}>{item.address}</Text>
+        <Text style={styles.deviceName}>{item.nombre}</Text>
+        <Text style={styles.deviceAddress}>{item.DireccionMac}</Text>
+        <View style={styles.statusContainer}>
+          <View style={[styles.statusDot, item.Estado ? styles.connected : styles.disconnected]} />
+          <Text style={[styles.statusText, item.Estado ? styles.connectedText : styles.disconnectedText]}>
+            {item.Estado ? 'Conectado' : 'Desconectado'}
+          </Text>
+        </View>
       </View>
       <Switch
-        value={item.enabled}
-        onValueChange={() => toggleDevice(item.id)}
+        value={active.some(a => a.id === item.id && a.active) ? true : false}
+        onValueChange={() => toggleDevice(item)}
       />
     </View>
   );
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Bluetooth</Text>
+          <View style={styles.infoBtn}>
+            <Text style={styles.infoIcon}>ℹ️</Text>
+          </View>
+        </View>
+        <Text style={styles.loadingText}>Cargando dispositivos...</Text>
+      </SafeAreaView>
+    );
+  }
+  if(error) return <Text style={{Color:'red'}}>{error}</Text>
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        
+
         <Text style={styles.headerTitle}>Bluetooth</Text>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.infoBtn}
           onPress={() => alert('Administrar dispositivos Bluetooth vinculados')}
         >
@@ -51,12 +104,15 @@ export default function BluetoothScreen({ navigation }) {
       </View>
 
       <Text style={styles.sectionTitle}>Dispositivos Vinculados</Text>
-      
+
       <FlatList
         data={devices}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No hay dispositivos vinculados</Text>
+        }
       />
     </SafeAreaView>
   );
@@ -121,5 +177,44 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 4,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  connected: {
+    backgroundColor: '#4CAF50',
+  },
+  disconnected: {
+    backgroundColor: '#9E9E9E',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  connectedText: {
+    color: '#4CAF50',
+  },
+  disconnectedText: {
+    color: '#9E9E9E',
+  },
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#888',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#888',
   },
 });

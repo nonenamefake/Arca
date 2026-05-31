@@ -1,11 +1,41 @@
-# Sample Snack app
+# Arca
 
-Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by scanning the **QR code** or use the iOS or Android emulators. When you're done, click **Save** and share the link!
+Aplicación móvil de seguridad con alarma, geocercas y gestión de dispositivos Bluetooth. Construida con React Native (Expo).
 
-When you're ready to see everything that Expo provides (or if you want to use your own editor) you can **Download** your project and use it with [expo cli](https://docs.expo.dev/get-started/installation/#expo-cli)).
+## Funcionalidades
 
-All projects created in Snack are publicly available, so you can easily share the link to this project via link, or embed it on a web page with the `<>` button.
+- **Alarma** — Activar/desactivar desde la pantalla principal. Estado persistente.
+- **Bluetooth** — Visualiza y gestiona dispositivos Bluetooth vinculados. Consulta una API local (`/devices`).
+- **Zona segura** — Define una geocerca en el mapa. Activa la seguridad automáticamente al salir del perímetro.
+- **Advertencia** — Configura un tiempo de advertencia antes de que suene la alarma.
 
-If you're having problems, you can tweet to us [@expo](https://twitter.com/expo) or ask in our [forums](https://forums.expo.dev/c/expo-dev-tools/61) or [Discord](https://chat.expo.dev/).
+## Stack
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack).
+- React 19 + React Native 0.81
+- Expo SDK 54
+- React Navigation (native-stack)
+- react-native-maps + expo-location
+- AsyncStorage
+- Axios
+- react-native-paper + @expo/vector-icons
+
+## Requisitos
+
+- Node.js >= 18
+- Expo CLI
+- Dispositivo/emulador físico (GPS, Bluetooth)
+
+## Instalación
+
+```bash
+npm install
+npx expo start
+```
+
+## API
+
+La pantalla Bluetooth consume una API REST en `http://192.168.1.45:3434/devices`. Ajusta la URL en `components/BluetoothScreen.js` según tu red.
+
+## Licencia
+
+0BSD
