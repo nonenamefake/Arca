@@ -20,10 +20,34 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCJ7vIZvv_NdZ3csm1WiuXyqZZvbbg5N2I"
+        }
+      },
+      "package": "com.nonamefake.snack62b4018534d142e78f6a5d2a749da30d"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ac4166dc-1da2-4a9b-ad85-b18282dd7b9f"
+      }
+    },
+    "owner": "nonamefake",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

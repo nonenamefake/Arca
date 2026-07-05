@@ -12,39 +12,8 @@ export default function BluetoothScreen({ navigation }) {
   const [active, setActive] = useState([]);
 
 
-  const getResquest = useCallback (async ()=>{
-    axios('http://192.168.1.45:3434/devices')
-    .then(response => setDevices(response.data))
-    .catch(error => seterror('Error al cargar dispositivos'))
-    .finally(() => setLoading(false));
-  },[]);
-useEffect(()=> {
-  getResquest();
-}, [getResquest]);
-useEffect(() => {
-  const loadTasks = async () => {
-    const data = await AsyncStorage.getItem("deviceactive");
-    if (data) setActive(JSON.parse(data));
-    };
-    loadTasks();
-  }, []);
-  
-  useEffect(() => {
-    const saveTasks = async () => {
-      await AsyncStorage.setItem("deviceactive", JSON.stringify(active));
-    };
-    saveTasks();
-  }, [active]);
 
-  const toggleDevice = async (item) => {
-    for (const device of active) {
-      if (device.id === item.id) {
-        setActive(active.map(d => d.id === item.id ? { ...d, active: !d.active } : d));
-        return;
-      }
-    }
-    setActive([...active, { id: item.id, active: true }]);
-  };
+  
   const renderItem = ({ item }) => (
     <View style={styles.deviceItem}>
       <View style={styles.deviceInfo}>

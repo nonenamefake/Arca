@@ -1,15 +1,52 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback,useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 const STORAGE_KEY = '@alarm_state';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+  async function mostrarNotificacion () {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Seguridad Activado",
+                body: "El sistema de alarma se esta ejecutando en segundo plano",
+            },
+            trigger: null,
+        });
+      
+  }
+  async function requestNotificationPermission(){
+    const { status: existingStatus } =
+    await Notifications.getPermissionsAsync();
+
+  let finalStatus = existingStatus;
+  if (existingStatus !== "granted") {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  if (finalStatus !== "granted") {
+    alert("No se concedieron los permisos para las notificaciones.");
+  }
+  }
+
+
 
 export default function HomeScreen({ navigation }) {
   const [alarmOn, setAlarmOn] = useState(false);
   const [loading, setLoading] = useState(true);
+const notificationId = useRef(null);
+
 
   useEffect(() => {
     loadAlarmState();
+    requestNotificationPermission();
   }, []);
 
   useEffect(() => {
@@ -39,9 +76,15 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const toggleAlarm = useCallback(() => {
+  const toggleAlarm = async () => {
     setAlarmOn((prev) => !prev);
-  }, []);
+    if (!alarmOn) {
+      await mostrarNotificacion();
+      
+    }else {
+      await Notifications.dismissAllNotificationsAsync();
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>

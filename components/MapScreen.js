@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback} from 'react';
+import React, { useState, useEffect , useCallback,  useMemo} from 'react';
 import { View, Text, Switch, TextInput, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, Modal, PermissionsAndroid,Platform } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -151,13 +151,10 @@ useEffect(() => {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
+          onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        
         <Text style={styles.headerTitle}>Zona segura</Text>
-        
         <TouchableOpacity 
           style={styles.infoBtn}
           onPress={() => alert('Configurar zona segura para Alarm')}
@@ -165,16 +162,13 @@ useEffect(() => {
           <Text style={styles.infoIcon}>ℹ️</Text>
         </TouchableOpacity>
       </View>
-
       <View style={styles.content}>
         <View style={styles.switchRow}>
           <Text style={styles.label}>Seguridad automática al salir de zona</Text>
           <Switch
             value={securityAuto}
-            onValueChange={handleSecurityToggle}
-          />
+            onValueChange={handleSecurityToggle}/>
         </View>
-
         {showMap && (
           <>
             <Text style={styles.sectionTitle}>Seleccionar Zona Segura</Text>
@@ -185,14 +179,12 @@ useEffect(() => {
                 value={meters}
                 onChangeText={handleMetersChange}
                 keyboardType="numeric"
-                placeholder="15"
-              />
+                placeholder="15"/>
             </View>
             <MapView
               style={styles.map}
               initialRegion={location}
-              onPress={handleMapPress}
-            >
+              onPress={handleMapPress}>
               {safeZone && (
                 <>
                   <Circle
