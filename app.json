@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "curious-indigo-peach",
+    "jsEngine": "hermes",
     "slug": "snack-62b40185-34d1-42e7-8f6a-5d2a749da30d",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,10 +26,16 @@
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT",
-        "BLUETOOTH_SCAN",
-        "BLUETOOTH_CONNECT",
-        "ACCESS_FINE_LOCATION",
-        "POST_NOTIFICATIONS"
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS"
       ],
       "config": {
         "googleMaps": {
@@ -46,8 +53,44 @@
       }
     },
     "owner": "nonamefake",
-    "plugins": [
-      "expo-font"
+        "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "ARCA necesita acceso a tu ubicación para detectar cuando sales de la zona segura.",
+          "locationAlwaysPermission": "ARCA necesita acceso a tu ubicación en segundo plano para monitorear la zona segura.",
+          "locationWhenInUsePermission": "ARCA necesita acceso a tu ubicación para configurar la zona segura."
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "android": {
+            "manifest": {
+              "usesPermissions": [
+                "android.permission.BLUETOOTH",
+                "android.permission.BLUETOOTH_ADMIN",
+                "android.permission.ACCESS_FINE_LOCATION",
+                "android.permission.ACCESS_COARSE_LOCATION"
+              ]
+            }
+          },
+          "ios": {
+            "infoPlist": {
+              "NSBluetoothAlwaysUsageDescription": "Esta app necesita Bluetooth para conectarse a dispositivos ARCA",
+              "NSBluetoothPeripheralUsageDescription": "Esta app necesita Bluetooth para conectarse a dispositivos ARCA"
+            }
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4A6CF7",
+          "sounds": []
+        }
+      ]
     ]
   }
 }
